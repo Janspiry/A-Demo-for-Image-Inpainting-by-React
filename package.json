@@ -4,18 +4,20 @@
   "private": true,
   "homepage": "http://cabreraalex.com/interactive-classification",
   "dependencies": {
+    "@emotion/react": "^11.7.0",
+    "@emotion/styled": "^11.6.0",
+    "@material-ui/core": "^5.0.0-beta.5",
     "d3-color": "^1.0.3",
     "d3-scale": "^2.0.0",
     "d3-scale-chromatic": "^1.2.0",
-    "deeplearn": "^0.5.0",
-    "deeplearn-squeezenet": "^0.2.0",
-    "material-ui": "^0.20.0",
-    "react": "^16.2.0",
-    "react-dom": "^16.2.0",
+    "material-ui": "^0.20.2",
+    "react": "^18.0.0-beta-a65ceef37-20211130",
+    "react-dom": "^18.0.0-beta-a65ceef37-20211130",
     "react-scripts": "1.1.0",
     "react-spinners": "^0.3.2",
     "requirejs": "^2.3.5",
-    "stackblur-canvas": "^1.4.1"
+    "stackblur-canvas": "^1.4.1",
+    "styled-components": "^5.3.3"
   },
   "scripts": {
     "start": "react-scripts start",

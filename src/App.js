@@ -1,17 +1,35 @@
 import React, { Component } from 'react';
 
-import * as dl from 'deeplearn';
-import {SqueezeNet} from './squeezenet/squeezenet.js';
+// import {SqueezeNet} from './squeezenet/squeezenet.js';
 import {MuiThemeProvider, Toolbar, ToolbarTitle} from 'material-ui';
 import {indigo500, red800} from 'material-ui/styles/colors';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
+import Box from '@material-ui/core/Box';
+
 import Options from './Options.js';
 import Modified from './Modified.js';
-import Original from './Original.js';
+import Help from './Help.js';
+
 
 import './App.css';
 
+function Item(props) {
+  const { sx, ...other } = props;
+  return (
+    <Box
+      sx={{
+        p: 0,
+        m: 0,
+        borderRadius: 1,
+        fontSize: '1rem',
+        fontWeight: '700',
+        ...sx,
+      }}
+      {...other}
+    />
+  );
+}
 const muiTheme = getMuiTheme({
   palette: {
     primary1Color: indigo500,
@@ -24,46 +42,72 @@ class App extends Component {
     super(props);
     
     this.state = {
-      netLoaded: false,
-      image: 'baseball.jpg',
+      netLoaded: true,
+      image: '普通.jpg',
       topK: new Map(),
       brushSize: 15,
       blurSize: 2,
       blur: 0,
-      reset: 0
+      reset: 0,
+      processedImage: null,
+      processedFinished: 0,
+      model: 'gconv',
+      random: 0,
+      eraserEnable: 0
     };
 
-    this.math = dl.ENV.math;
-    this.net = new SqueezeNet(this.math);
+  }
 
-    this.net.load().then(() => {
+  imageChanged = (e) => {
+    
+    this.setState({
+      image: e.target.value
+    });
+  }
+  modelChanged = (e) => {
+    this.setState({
+      model:  e.target.value
+    });
+  }
+
+  eraserChanged = (event, eraserEnable) => {
+    this.setState({eraserEnable: eraserEnable});
+  };
+
+  // 文件上传没完成！！
+  imageUpload = (e) => {
+    e.preventDefault()
+    let file = e.target
+    var reader = new FileReader();
+    reader.readAsDataURL(file.files[0].getNative());
+    const img = new Image(256, 256);
+    reader.onload = function (e) {
+        img.src = this.result;
+    }
+  }
+
+  imageProcessed = (e) => {
+    this.setState({
+      processedImage: e,
+      processedFinished: 1
+    }, function() {
       this.setState({
-        netLoaded: true
-      }) 
+        processedFinished: 0
+      });
     });
   }
 
-  imageChanged = (e, i, val) => {
-    this.setState({
-      image: val
-    });
-  }
+  imageRandomed = (e) => {
+    console.log('imageRandomed:'+e)
 
-  blurChanged = (e, val) => {
     this.setState({
-      blurSize: val
+      image: e
     });
   }
 
   brushChanged = (e, val) => {
     this.setState({
       brushSize: val
-    });
-  }
-
-  updateTop = (k) => {
-    this.setState({
-      topK: k
     });
   }
   
@@ -77,15 +121,16 @@ class App extends Component {
     });
   }
 
-  blur = (e) => {
+  randomImage = (e) => {
     this.setState({
-      blur: 1
+      random: 1
     }, function() {
       this.setState({
-        blur: 0
+        random: 0
       });
     });
   }
+  
 
   render() {
     if (this.state.netLoaded) {
@@ -93,21 +138,37 @@ class App extends Component {
         <MuiThemeProvider muiTheme={muiTheme}>
           <div id="mui-container">
             <Toolbar id="header" style={{backgroundColor: "rgba(63, 81, 181,1.0)", color: "white"}}>
-              <a href="/"><ToolbarTitle text="Interactive Classification" /></a>
+              <a href="/"><ToolbarTitle text="交互式人脸修复" /></a>
             </Toolbar>
             <div id="main">
-              <Options imageChanged={this.imageChanged} brushChanged={this.brushChanged} blurChanged={this.blurChanged} blur={this.blur} reset={this.reset} 
-                      blurSize={this.state.blurSize} brushSize={this.state.brushSize} image={this.state.image}/>
-              <Modified image={this.state.image} net={this.net} brushSize={this.state.brushSize} blurSize={this.state.blurSize} 
-                        reset={this.state.reset} blur={this.state.blur} ref={(c) => this.mod = c} topK={this.state.topK} />
-              <Original image={this.state.image} net={this.net} updateKeys={this.updateTop} />
+          <Box sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            p: 0,
+            m: 0,
+          }}>
+            <Item sx={{flexShrink: 1}}>
+                <Options imageChanged={this.imageChanged}  imageUpload={this.imageUpload} modelChanged={this.modelChanged} 
+                brushChanged={this.brushChanged}  reset={this.reset} randomImage={this.randomImage} random={this.state.random} eraserChanged={this.eraserChanged} 
+                  brushSize={this.state.brushSize} image={this.state.image} model={this.state.model}/>
+            </Item>
+            <Item sx={{width: '100%', alignSelf: 'center'}}> 
+                  <Modified imageRandomed={this.imageRandomed} imageProcessed={this.imageProcessed}  
+                  image={this.state.image} brushSize={this.state.brushSize} reset={this.state.reset} 
+                  random={this.state.random}  ref={(c) => this.mod = c} model={this.state.model}
+                  eraserEnable={this.state.eraserEnable}/>
+            </Item>
+            <Item sx={{flexShrink: 1}}> 
+              <Help/>
+            </Item>
+         </Box>
             </div>
           </div>
         </MuiThemeProvider>
       );
     } else {
       return (
-        <h3 id="loading-text">Loading Net</h3>
+        <h3 id="loading-text">加载出错</h3>
       );
     }
   }

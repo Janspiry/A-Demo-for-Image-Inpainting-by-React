@@ -1,97 +1,157 @@
 import React, { Component } from 'react';
-import {RaisedButton, Slider, SelectField, MenuItem, Card, CardHeader, CardText, CardActions, FlatButton} from 'material-ui';
-import NavigationArrowForward from 'material-ui/svg-icons/navigation/arrow-forward';
-import NavigationArrowBack from 'material-ui/svg-icons/navigation/arrow-back';
+import Button from '@material-ui/core/Button';
+import Box from '@material-ui/core/Box';
+import Slider from '@material-ui/core/Slider';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import Divider from '@material-ui/core/Divider';
+
+import Stack from '@material-ui/core/Stack';
 import {indigo500} from 'material-ui/styles/colors';
+import { styled } from '@material-ui/core/styles';
+import LoadingButton from '@material-ui/core/Button';
+
+import PropTypes from 'prop-types';
 import './App.css';
 
+function Item(props) {
+  const { sx, ...other } = props;
+  return (
+    <Box
+      sx={{
+        p: 1,
+        m: 1,
+        borderRadius: 1,
+        fontSize: '1rem',
+        fontWeight: '700',
+        ...sx,
+      }}
+      {...other}
+    />
+  );
+}
+const Input = styled('input')({
+  display: 'none',
+});
 class Options extends Component {
   constructor(props) {
     super(props);
     
     this.state = {
-      tSlide: 0,
-      slides: [
-        <span><b>Interactive Classification</b> allows you to explore how computers see by modifying images.</span>,
-        <span>The <b>Class</b> column tells you what the computer thinks the image is, and the <b>Confidence %</b> column tells you how confident it is in its choice.</span>,
-        <span>You can click on a row to see the <b>Class Activation Map</b>. This is a heatmap showing which areas of the image the computer found most important when choosing that class.</span>,
-        <span>Hover over the <b>Modified Image</b> to see a yellow circle. Draw, by clicking and dragging over the image, to remove an object.</span>,
-        <span>The <b>Absolute % Change</b> column shows you the difference between the original classication and the modified classification. Clicking on <b>Confidence %</b> sorts by the new top classes. You can also see the new <b>Class Activation Maps</b> for the modified image by clicking on a row.</span>,
-        <span>Try out different images and see how the computer does! You can try taking the ball out of a soccer match, removing the poles from a skier, taking people out of a beach scene, and much more!</span>
-      ]
+      
     };
   }
-
-  nextPage = () => {
-    if (this.state.tSlide !== this.state.slides.length - 1) {
-      this.setState({
-        tSlide: this.state.tSlide + 1
-      });
-    }
+  
+  handleImageUpload(e) {
+    this.props.imageUpload(e)
   }
 
-  prevPage = () => {
-    if (this.state.tSlide !== 0) {
-      this.setState({
-        tSlide: this.state.tSlide - 1
-      });
-    }
+  componentWillReceiveProps(nProps) {
+    this.props = nProps
   }
 
   render() {
     return (
+      
       <div className="box" id="options">
-        <div id="select-container">
-          <h4>Select Image</h4>
-          <SelectField onChange={this.props.imageChanged} value={this.props.image} fullWidth={true}>
-            <MenuItem value="baseball.jpg" primaryText="Baseball"/>
-            <MenuItem value="skiing.jpg" primaryText="Skiing"/>
-            <MenuItem value="hockey.jpg" primaryText="Hockey Goal"/>
-            <MenuItem value="bank.jpg" primaryText="ATM"/>
-            <MenuItem value="soccer.jpg" primaryText="Soccer"/>
-            <MenuItem value="sailboat.jpg" primaryText="Sail Boat"/>
-            <MenuItem value="lighthouse.jpg" primaryText="Lighthouse"/>
-            <MenuItem value="beach.jpg" primaryText="Beach"/>
-            <MenuItem value="hockey2.jpg" primaryText="Hockey"/>
-          </SelectField>
-        </div>
-        <div id="brush-container">
-          <h4>Brush Size</h4>
-          <div id="brush-slider-container">
-            <div id="slider-container">
-              <Slider min={2} max={30} defaultValue={15} step={1} className='slider' onChange={this.props.brushChanged}/>
-            </div>
-            <div id="svg-container">
-              <svg height="60px" width="60px">
-                <circle cx="30" cy="30" fill={indigo500} r={this.props.brushSize}/>
-              </svg>
-            </div>
-          </div>
-        </div>
-        <div id="reset-button">
-          <RaisedButton label="Reset" secondary={true} onClick={this.props.reset}/>
-        </div>
-        <div id="tutorial-container">
-          <Card>
-            <CardHeader title="Tutorial" titleColor={indigo500} titleStyle={{fontWeight: 800}} style={{paddingBottom: 0}} />
-            <CardText style={{paddingTop: 10}}>
-              {this.state.slides[this.state.tSlide]}
-            </CardText>
-            <CardActions>
-              <FlatButton icon={<NavigationArrowBack />} onClick={this.prevPage} />
-              <FlatButton icon={<NavigationArrowForward />} onClick={this.nextPage}/>
-            </CardActions>
-          </Card>
-        </div>
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+            p: 1,
+            m: 1,
+            // bgcolor: 'background.paper',
+          }}
+        >
+          <Item sx={{ minWidth: 200 , textAlign: 'center'}}>
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">选择示例图片</InputLabel>
+                <Select
+                  autoWidth
+                  errorText={!(this.props.image === '普通.jpg' || this.props.image === '侧脸.jpg' || this.props.image === '正脸.jpg') && '当前正使用其他来源图片'} errorStyle={{color: 'orange'}}  
+                  onChange={this.props.imageChanged} value={this.props.image} 
+                >
+                  <MenuItem value="普通.jpg">普通人脸</MenuItem>
+                  <MenuItem value="侧脸.jpg">侧面人脸</MenuItem>
+                  <MenuItem value="正脸.jpg">正面人脸</MenuItem>
+                </Select>
+              </FormControl>
+          </Item>
+          <Item sx={{ minWidth: 200, textAlign: 'center' }}>
+          
+              <FormControl fullWidth>
+                <InputLabel id="demo-simple-select-label">选择模型</InputLabel>
+                <Select onChange={this.props.modelChanged} value={this.props.model} >
+                  <MenuItem value="gconv">应付随机缺失</MenuItem>
+                  <MenuItem value="center">应付大面积缺失</MenuItem>
+                </Select>
+              </FormControl>
+
+          </Item>
+          <Divider/>
+          <Item>
+              <h4>画笔尺寸</h4>    
+              <Box sx={{  display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',}}>
+                <Box sx={{ minWidth: 120}} >
+                <Slider min={2} max={30} defaultValue={15} step={1}  onChange={this.props.brushChanged}/>
+                </Box>
+                <svg height="60px" width="60px">
+                  <circle cx="30" cy="30" fill={indigo500} r={this.props.brushSize}/>
+                </svg>
+              </Box>
+          </Item>
+          <Divider/>
+          <Item>
+              <Button variant="outlined" color="error" onClick={this.props.reset}>重修一次</Button>
+          </Item>
+          <Item >
+              <FormGroup>
+                  <FormControlLabel
+                    control={
+                      <Switch checked={this.props.eraserEnable} onChange={this.props.eraserChanged} name="gilad" />
+                    }
+                    labelPosition="right"
+                    label="使用橡皮擦"
+                  />
+              </FormGroup>
+          </Item>
+          <Divider/>
+          <Item  sx={{  display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+              <Button variant="outlined" onClick={this.props.randomImage}>随机看看</Button>
+              {/* <LoadingButton
+                onClick={this.props.randomImage}
+                loading 
+                variant="outlined"
+              >
+                随机看看
+              </LoadingButton> */}
+              <Stack direction="row" alignItems="center" spacing={2}>
+                <label htmlFor="contained-button-file">
+                  <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={this.handleImageUpload.bind(this)}/>
+                  <Button variant="contained" component="span">
+                    上传图片
+                  </Button>
+                </label>
+              </Stack>
+          </Item>
+          
+        </Box>
+          
+
+        
+        
       </div>
+      
     );
-    /*
-        <div id="blur-container">
-          <h4>Blur Radius:</h4>
-          <Slider min={0.5} max={15} defaultValue={2} step={0.5} className='slider' onChange={this.props.blurChanged}/>
-          <RaisedButton className="blur-button" label="Blur" primary={true} onClick={this.props.blur}/>
-        </div>
-    */
+    
+        
+    
   }
 }
 

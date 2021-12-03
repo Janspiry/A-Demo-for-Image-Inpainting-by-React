@@ -1,8 +1,0 @@
-{
-  "short_name": "Interactive Classification",
-  "name": "Interactive Classification for Deep Learning Interpretation",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
-}

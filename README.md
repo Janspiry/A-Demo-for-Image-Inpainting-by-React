@@ -1,96 +1,47 @@
-# Interactive Classification for Deep Learning Interpretation
+本项目为基于注意力机制的人脸图像修复展示，大体分为前后端两个部分。
 
-We have designed and developed an interactive system that allows users to experiment with deep learning image classifiers and explore their robustness and sensitivity.
-Selected areas of an image can be removed in real time with classical computer vision inpainting algorithms, allowing users to ask a variety of "what if" questions by experimentally modifying images and seeing how the deep learning model reacts.
-The system also computes class activation maps for any selected class, which highlight the important semantic regions of an image the model uses for classification.
-The system runs fully in browser using Tensorflow.js, React, and SqueezeNet.
-An advanced inpainting version is also available using a server running the PatchMatch algorithm from the [GIMP Resynthesizer plugin](https://github.com/bootchk/resynthesizer).
+后端是由Python，结合Numpy及Pytorch编写的修复模型。
 
-[![YouTube video demo](images/thumbnail.png)](https://youtu.be/llub5GcOF6w)
+前端逻辑通过js书写，界面通过React配合MUI组件库设计。
 
-This is the code repository for the accepted [CVPR 2018][cvpr18] Demo: **Interactive Classification for Deep Learning Interpretation**.
-Visit our research group homepage [Polo Club of Data Science][poloclub] at [Georgia Tech](http://www.gatech.edu) for more related research!
+前后端交互通过Flask实现。
 
-## Example Scenario: Interpreting "Failed" Classification
+#### 运行
 
-The modified image (left), originally classified as *dock* is misclassified as *ocean liner* when the masts of a couple boats are removed from the original image (right).
-The top five classification scores are tabulated underneath each image.
+在运行之前，我们需要准备模型需要的依赖库及前端所需的组件库。
 
-![Failed classification](images/failure.png)
+可以通过pip或者conda虚拟环境安装，进入后端项目主目录inpaint，运行如下命令：
 
-## Installation
-
-Download or clone this repository:
-
-```bash
-git clone https://github.com/poloclub/interactive-classification.git
+```python
+conda create -n pytorch python=3.7
+conda activate pytorch
+conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
+conda install numpy PIL opencv glob einops
+conda install pyqt5
 ```
 
-Within the cloned repo, install the required packages with yarn:
+随后运行界面程序
 
-```bash
-yarn
-
+```python
+python inpaint_server.py
 ```
 
-## Usage
-
-To run, type:
+在项目主目录安装前端依赖，运行一下命令
 
 ```bash
+yarn install
 yarn start
-
 ```
 
-## Advanced Inpainting
-
-The following steps are needed to set up PatchMatch inpainting, which currently only works on Linux:
-
-1. Clone the [Resynthesizer](https://github.com/bootchk/resynthesizer) repository and follow the instructions for building the project (stop after running `make`)
-2. Find the `libresynthesizer.a` shared library in the generated `lib` folder and copy it to the `inpaint` folder in this repository
-3. Run `gcc resynth.c -L. -lresynthesizer -lm -lglib-2.0 -o prog` (may have to install glib2.0 first) to generate the `prog` executable
-4. You can now run `python3 inpaint_server.py` and PatchMatch will be used as the inpainting algorithm when running the React application with `yarn start`.
-
-## Citation
-
-**[Interactive Classification for Deep Learning Interpretation][site]**  
-[Angel Cabrera][angel], [Fred Hohman][fred], [Jason Lin][jason], [Duen Horng (Polo) Chau][polo]  
-*Demo, Conference on Computer Vision and Pattern Recognition (CVPR). June 18, 2018. Salt Lake City, USA.*
+#### 文件说明
 
 ```
-@article{cabrera2018interactive,
-  title={Interactive Classification for Deep Learning Interpretation},
-  author={Cabrera, Angel and Hohman, Fred and Lin, Jason and Chau, Duen Horng},
-  journal={Demo, Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition},
-  year={2018},
-  organization={IEEE}
-}
+├─inpaint # 后端 
+    ├─inpaint_server # 前后端对接
+├─public # 公共资源文件
+└─src # 前端
 ```
 
-## Researchers
+### 效果展示
 
-|  Name                 | Affiliation                     |
-|-----------------------|---------------------------------|
-| [Angel Cabrera][angel]           | Georgia Tech |
-| [Fred Hohman][fred]    | Georgia Tech |
-| [Jason Lin][jason]        | Georgia Tech |
-| [Duen Horng (Polo) Chau][polo]             | Georgia Tech |
-
-## License
-
-MIT License. See [`LICENSE.md`](LICENSE.md).
-
-## Contact
-
-For questions or support [open an issue][issues].
-
-[site]: http://fredhohman.com/papers/interactive-classification
-[paper]: http://fredhohman.com/papers/18-interactive-cvpr.pdf
-[video]: https://youtu.be/llub5GcOF6w "Video"
-[fred]: http://fredhohman.com "Fred Hohman"
-[angel]: http://cabreraalex.com/ "Alex Cabrera"
-[jason]: http://jlin.xyz/ "Jason Lin"
-[polo]: http://www.cc.gatech.edu/~dchau/ "Polo Chau"
-[issues]: https://github.com/poloclub/interactive-classification/issues "Issues"
-[cvpr18]: http://cvpr2018.thecvf.com
-[poloclub]: https://poloclub.github.io
+![](assets\2021-12-03-20-09-30-image.png)
