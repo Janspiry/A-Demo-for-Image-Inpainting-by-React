@@ -44,4 +44,4 @@ yarn start
 
 ### 效果展示
 
-![](assets\2021-12-03-20-09-30-image.png)
+![](assets/2021-12-03-20-09-30-image.png)
