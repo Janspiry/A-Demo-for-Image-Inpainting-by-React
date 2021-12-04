@@ -43,30 +43,25 @@ class App extends Component {
     
     this.state = {
       netLoaded: true,
-      image: '普通.jpg',
-      topK: new Map(),
       brushSize: 15,
-      blurSize: 2,
-      blur: 0,
       reset: 0,
-      processedImage: null,
-      processedFinished: 0,
-      model: 'gconv',
+      image_type: 'celebahq',
+      mask_mode: 'gconv',
       random: 0,
       eraserEnable: 0
     };
 
   }
 
-  imageChanged = (e) => {
+  imageTypeChanged = (e) => {
     
     this.setState({
-      image: e.target.value
+      image_type: e.target.value
     });
   }
-  modelChanged = (e) => {
+  maskModeChanged = (e) => {
     this.setState({
-      model:  e.target.value
+      mask_mode:  e.target.value
     });
   }
 
@@ -86,24 +81,6 @@ class App extends Component {
     }
   }
 
-  imageProcessed = (e) => {
-    this.setState({
-      processedImage: e,
-      processedFinished: 1
-    }, function() {
-      this.setState({
-        processedFinished: 0
-      });
-    });
-  }
-
-  imageRandomed = (e) => {
-    console.log('imageRandomed:'+e)
-
-    this.setState({
-      image: e
-    });
-  }
 
   brushChanged = (e, val) => {
     this.setState({
@@ -138,7 +115,7 @@ class App extends Component {
         <MuiThemeProvider muiTheme={muiTheme}>
           <div id="mui-container">
             <Toolbar id="header" style={{backgroundColor: "rgba(63, 81, 181,1.0)", color: "white"}}>
-              <a href="/"><ToolbarTitle text="交互式人脸修复" /></a>
+              <a href="/"><ToolbarTitle text="交互式图像修复" /></a>
             </Toolbar>
             <div id="main">
           <Box sx={{
@@ -148,15 +125,13 @@ class App extends Component {
             m: 0,
           }}>
             <Item sx={{flexShrink: 1}}>
-                <Options imageChanged={this.imageChanged}  imageUpload={this.imageUpload} modelChanged={this.modelChanged} 
+                <Options imageTypeChanged={this.imageTypeChanged}  imageUpload={this.imageUpload} maskModeChanged={this.maskModeChanged} 
                 brushChanged={this.brushChanged}  reset={this.reset} randomImage={this.randomImage} random={this.state.random} eraserChanged={this.eraserChanged} 
-                  brushSize={this.state.brushSize} image={this.state.image} model={this.state.model}/>
+                  brushSize={this.state.brushSize} image_type={this.state.image_type} mask_mode={this.state.mask_mode}/>
             </Item>
             <Item sx={{width: '100%', alignSelf: 'center'}}> 
-                  <Modified imageRandomed={this.imageRandomed} imageProcessed={this.imageProcessed}  
-                  image={this.state.image} brushSize={this.state.brushSize} reset={this.state.reset} 
-                  random={this.state.random}  ref={(c) => this.mod = c} model={this.state.model}
-                  eraserEnable={this.state.eraserEnable}/>
+                  <Modified  image_type={this.state.image_type}  mask_mode={this.state.mask_mode} brushSize={this.state.brushSize} reset={this.state.reset} 
+                  random={this.state.random}  eraserEnable={this.state.eraserEnable}/>
             </Item>
             <Item sx={{flexShrink: 1}}> 
               <Help/>

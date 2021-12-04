@@ -29,18 +29,22 @@ class ui_model():
     mask_tensor = None
     img_tensor = None
     config = None
-    config_name_list = ['celeba_random', 'celeba_center']
-    model_name_list = ['tfpnnet_dis_mask', 'tfpnnet']
+    config_name_list = ['celebahq_gconv', 'celebahq_center', 'places2_gconv']
+    model_name_list = ['tfpnnet', 'tfpnnet', 'tfpnnet_simple']
     index = 0
     def __init__(self):
         self.load_model()
-    def change_model(self, model):
-        # print('model:', model)
-        if model=='gconv' and self.index!=0:
+    def change_model(self, image_type, mask_mode):
+        model = '{}_{}'.format(image_type, mask_mode)
+        # print('Model change to ', model)
+        if model=='celebahq_gconv' and self.index!=0:
             self.index = 0
             self.load_model()
-        elif model=='center' and self.index!=1:
+        elif model=='celebahq_center' and self.index!=1:
             self.index = 1
+            self.load_model()
+        elif model=='places2_gconv' and self.index!=2:
+            self.index = 2
             self.load_model()
     def load_model(self):
         """Load different kind models for different datasets and mask types"""
@@ -54,7 +58,10 @@ class ui_model():
         self.config['model_dir'] = os.path.join(self.config['model_dir'], '{}_{}_{}_{}{}'.format(self.config['model_val_sub_dir'], self.config['model_name'], 
     self.config['data_loader']['name'], self.config['data_loader']['mask'], self.config['data_loader']['w']))
         latest_epoch = open(os.path.join(self.config['model_dir'], 'latest.ckpt'), 'r').read().splitlines()[-1]
-        path = os.path.join(self.config['model_dir'], '{}.pth'.format(latest_epoch))
+        if self.index<2:
+            path = os.path.join(self.config['model_dir'], '{}.pth'.format(latest_epoch))
+        else:
+            path = os.path.join(self.config['model_dir'], 'gen_{}.pth'.format(latest_epoch))
         data = torch.load(path, map_location = lambda storage, loc: set_device(storage)) 
         self.model.load_state_dict(data['netG'])
         self.model.eval()    
@@ -137,8 +144,8 @@ class ui_model():
         ret = np.array(ret).reshape(-1)
         return ret.tolist()
 
-    def randomImage(self, model):
-        self.change_model(model)
+    def randomImage(self, image_type, mask_mode):
+        self.change_model(image_type, mask_mode)
         self.img_names = list(glob.glob('{}/*.jpg'.format(self.img_file_dir)))
         image_num = len(self.img_names)   
         item = random.randint(0, image_num-1)
@@ -146,9 +153,9 @@ class ui_model():
         self.img = Image.open(self.fname).convert("RGB")
         self.img = self.img.resize((self.w, self.h))
         self.img_tensor = set_device(F.to_tensor(self.img)*2-1).unsqueeze(0)
-        if model == 'gconv':
+        if mask_mode == 'gconv':
             self.mask = self.random_ff_mask()
-        elif model == 'center':
+        elif mask_mode == 'center':
             m = np.zeros((self.h, self.w)).astype(np.uint8)
             m[self.h//4:self.h*3//4, self.w//4:self.w*3//4] = 255
             self.mask = Image.fromarray(m).convert('L')
@@ -194,7 +201,7 @@ def create_app():
     def change_model_req():
         if request.method == 'POST':
             data = request.get_json(force=True)
-            return jsonify(model.change_model(data['model']))
+            return jsonify(model.change_model(data['image_type'], data['mask_mode']))
         return jsonify({"error": "Must be post request"})
     
     @app.route('/randomImage', methods=['POST'])
@@ -202,7 +209,7 @@ def create_app():
     def random_image_req():
         if request.method == 'POST':
             data = request.get_json(force=True)
-            return jsonify(model.randomImage(data['model']))
+            return jsonify(model.randomImage(data['image_type'], data['mask_mode']))
         return jsonify({"error": "Must be post request"})
 
     return app

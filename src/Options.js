@@ -71,15 +71,13 @@ class Options extends Component {
         >
           <Item sx={{ minWidth: 200 , textAlign: 'center'}}>
               <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">选择示例图片</InputLabel>
+                <InputLabel id="demo-simple-select-label">选择图片类型</InputLabel>
                 <Select
                   autoWidth
-                  errorText={!(this.props.image === '普通.jpg' || this.props.image === '侧脸.jpg' || this.props.image === '正脸.jpg') && '当前正使用其他来源图片'} errorStyle={{color: 'orange'}}  
-                  onChange={this.props.imageChanged} value={this.props.image} 
+                  onChange={this.props.imageTypeChanged} value={this.props.image_type} 
                 >
-                  <MenuItem value="普通.jpg">普通人脸</MenuItem>
-                  <MenuItem value="侧脸.jpg">侧面人脸</MenuItem>
-                  <MenuItem value="正脸.jpg">正面人脸</MenuItem>
+                  <MenuItem value="celebahq">处理人脸</MenuItem>
+                  <MenuItem value="places2">处理自然风景</MenuItem>
                 </Select>
               </FormControl>
           </Item>
@@ -87,7 +85,7 @@ class Options extends Component {
           
               <FormControl fullWidth>
                 <InputLabel id="demo-simple-select-label">选择模型</InputLabel>
-                <Select onChange={this.props.modelChanged} value={this.props.model} >
+                <Select onChange={this.props.maskModeChanged} value={this.props.mask_mode} >
                   <MenuItem value="gconv">应付随机缺失</MenuItem>
                   <MenuItem value="center">应付大面积缺失</MenuItem>
                 </Select>
@@ -123,14 +121,7 @@ class Options extends Component {
           </Item>
           <Divider/>
           <Item  sx={{  display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-              <Button variant="outlined" onClick={this.props.randomImage}>随机看看</Button>
-              {/* <LoadingButton
-                onClick={this.props.randomImage}
-                loading 
-                variant="outlined"
-              >
-                随机看看
-              </LoadingButton> */}
+              <Button variant="outlined" onClick={this.props.randomImage}>随机图片</Button>
               <Stack direction="row" alignItems="center" spacing={2}>
                 <label htmlFor="contained-button-file">
                   <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={this.handleImageUpload.bind(this)}/>

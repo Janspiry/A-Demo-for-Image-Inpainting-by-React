@@ -1,5 +1,5 @@
 {
-  "short_name": "交互式人脸修复",
+  "short_name": "交互式图像修复",
   "name": "Interactive Classification for Deep Learning Interpretation",
   "start_url": "./index.html",
   "display": "standalone",

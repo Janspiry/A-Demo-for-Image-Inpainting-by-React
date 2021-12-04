@@ -5,8 +5,6 @@ import numpy as np
 from torch.autograd import Variable
 from .networks import SNGatedConv2dWithActivation
 from .transformer.transformer_method import TransformerBlock
-from einops import rearrange, repeat
-# from core.spectral_norm import use_spectral_norm
 class BaseNetwork(nn.Module):
   def __init__(self):
     super(BaseNetwork, self).__init__()

@@ -3,8 +3,10 @@ import React, { Component } from 'react';
 import {Paper} from 'material-ui';
 import Slider from '@material-ui/core/Slider';
 import {ClipLoader} from 'react-spinners';
+import LinearProgress from '@material-ui/core/LinearProgress';
+
 import Box from '@material-ui/core/Box';
-import {inpaint, drawImage, changeModel, randomImage} from './util.js';
+import {inpaint, changeModel, randomImage} from './util.js';
 import './App.css';
 // import styles from './App.css';
 import PropTypes from 'prop-types';
@@ -99,16 +101,8 @@ class Modified extends Component {
         }
     }
 
-    mouseUp = () => {
-        this.setState({
-            mouseDown: false,
-            loading: true
-        }) 
-
-        inpaint(this.cPaintImg.getContext('2d'), this.cPaintDraw.getContext('2d')).then(img => {
-            this.cinpaintImg.getContext('2d').putImageData(img[0], 0, 0);
-            this.gensliderImage()
-         }).then(() => this.setState({ loading: false }));
+    mouseUp = () => { 
+        this.inpaintImage()
     }
 
     mouseLeave = () => {
@@ -138,17 +132,34 @@ class Modified extends Component {
         }) 
         this.gensliderImage()
      }
-
-    drawOriginImage = (image) => {
-        drawImage(this.cPaintImg.getContext('2d'), image, function(img) {
-        }.bind(this));
-        drawImage(this.cinpaintImg.getContext('2d'), image, function(img) {
-        }.bind(this));
-        drawImage(this.cGenImg.getContext('2d'), image, function(img) {
-        }.bind(this));
+    
+    inpaintImage = () => {
+        this.setState({
+            mouseDown: false,
+            loading: true
+        })
+        inpaint(this.cPaintImg.getContext('2d'), this.cPaintDraw.getContext('2d')).then(img => {
+            this.cinpaintImg.getContext('2d').putImageData(img[0], 0, 0);
+            this.gensliderImage()
+         }).then(() => this.setState({ loading: false }));
+    }
+    drawRandomImage = (nProps) => {
+        this.setState({
+            mouseDown: false,
+            loading: true
+        })
+        randomImage(nProps.mask_mode, nProps.mask_mode).then(img => {
+            // 更新编辑图与对应mask
+            this.cPaintImg.getContext('2d').putImageData(img[0], 0, 0);
+            this.cPaintDraw.getContext('2d').putImageData(img[1], 0, 0);
+            // 修复好的图片
+            this.cinpaintImg.getContext('2d').putImageData(img[2], 0, 0);
+            // 根据滑动条更新合成图
+            this.gensliderImage()
+         }).then(() => this.setState({ loading: false }));
     }
     componentDidMount() {
-        this.drawOriginImage(this.props.image);
+        this.drawRandomImage(this.props);
     }
 
     componentWillReceiveProps(nProps) {
@@ -156,30 +167,17 @@ class Modified extends Component {
             // 编辑重置
             this.cPaintDraw.getContext('2d').clearRect(0, 0, 256, 256);
         }
-        if (this.props.image!=nProps.image) {
-            // 图片更换
-            this.cPaintDraw.getContext('2d').clearRect(0, 0, 256, 256);
-            this.drawOriginImage(nProps.image)
+        if (this.props.image_type!=nProps.image_type || this.props.mask_mode!=nProps.mask_mode) {
+            // 图片类型或者模型更换
+            changeModel(nProps.image_type, nProps.mask_mode);
+            this.inpaintImage()
         }
-        if (this.props.model!=nProps.model){
-            // 模型更换
-            changeModel(nProps.model)
-        } 
         if (nProps.random){
             // 随机图片
-            randomImage(nProps.model).then(img => {
-                // 保存随机图片到前端
-                nProps.imageRandomed(img[0])
-                // 更新编辑图与对应mask
-                this.cPaintImg.getContext('2d').putImageData(img[0], 0, 0);
-                this.cPaintDraw.getContext('2d').putImageData(img[1], 0, 0);
-                // 修复好的图片
-                this.cinpaintImg.getContext('2d').putImageData(img[2], 0, 0);
-                // 根据滑动条更新合成图
-                this.gensliderImage()
-             }).then(() => this.setState({ loading: false }));
+            this.drawRandomImage(this.props);
         }
         if (this.props.eraserEnable!=nProps.eraserEnable){
+            // 橡皮擦
             this.setState({
                 eraserEnable: nProps.eraserEnable
             }) 
@@ -212,7 +210,8 @@ class Modified extends Component {
                             </canvas>
                         </Paper>
                         <h3 style={{margin:10}} id="modified-title">编辑图片</h3>
-                        <ClipLoader color="rgb(63, 81, 181)" loading={this.state.loading} />
+                        <ClipLoader color="rgb(25, 118, 210)" loading={this.state.loading} />
+                        {/* <LinearProgress  disabled={this.state.loading}/> */}
                     </Item>
                     <Item >
                         <Paper style={{height: 256, width: 256}} zDepth={3}>

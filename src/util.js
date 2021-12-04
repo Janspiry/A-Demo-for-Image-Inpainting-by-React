@@ -53,7 +53,7 @@ export async function inpaint(iCtx, dCtx) {
    });
 }
 
-export async function changeModel(model) {
+export async function changeModel(image_type, mask_mode) {
     return fetch('http://127.0.0.1:5000/changeModel', {
         method: 'POST',
         mode: 'cors',
@@ -61,7 +61,8 @@ export async function changeModel(model) {
             'Accept': 'application/json',
         },
         body: JSON.stringify({
-            "model": model,
+            'image_type': image_type,
+            "mask_mode": mask_mode
         })
     }).then(res => res.json())
     .then(res => {
@@ -73,7 +74,7 @@ export async function changeModel(model) {
 }
 
 
-export async function randomImage(model) {
+export async function randomImage(image_type, mask_mode) {
     return fetch('http://127.0.0.1:5000/randomImage', {
         method: 'POST',
         mode: 'cors',
@@ -81,7 +82,8 @@ export async function randomImage(model) {
             'Accept': 'application/json',
         },
         body: JSON.stringify({
-            "model": model,
+            'image_type': image_type,
+            "mask_mode": mask_mode
         })
     }).then(res => res.json())
     .then(res => {

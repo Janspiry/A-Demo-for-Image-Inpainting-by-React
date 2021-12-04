@@ -5,7 +5,6 @@ import numpy as np
 from torch.autograd import Variable
 from .networks import SNGatedConv2dWithActivation
 from .transformer.transformer_method import TransformerBlock
-from einops import rearrange, repeat
 class BaseNetwork(nn.Module):
   def __init__(self):
     super(BaseNetwork, self).__init__()
@@ -16,9 +15,9 @@ class BaseNetwork(nn.Module):
     num_params = 0
     for param in self.parameters():
       num_params += param.numel()
-    print('Network [%s] was created. Total number of parameters: %.1f million. '
-          'To see the architecture, do print(network).'% (type(self).__name__, num_params / 1000000))
-
+    str = 'Network [%s] was created. Total number of parameters: %.1f million. To see the architecture, do print(network).'% (type(self).__name__, num_params / 1000000)
+    print(str)
+    return str
   def init_weights(self, init_type='normal', gain=0.02):
     '''
     initialize network's weights
@@ -81,15 +80,11 @@ class InpaintGenerator(BaseNetwork):
             SNGatedConv2dWithActivation(cnum*4, cnum, kernel_size=3, stride=1, padding=1)
         )
         self.trans2 = nn.Sequential(
-            TransformerBlock(size=[cnum*2, 128, 128],patch_size=16, MiniTransFormer=[256, 1, 8, 1024], use_global=True),
-            SNGatedConv2dWithActivation(cnum*2, cnum*2, kernel_size=3, stride=1, padding=1),
-            TransformerBlock(size=[cnum*2, 128, 128],patch_size=8, MiniTransFormer=[256, 1, 8, 1024], use_local=True),
+            TransformerBlock(size=[cnum*2, 128, 128],patch_size=8, MiniTransFormer=[256, 1, 8, 1024], use_global=True),
             SNGatedConv2dWithActivation(cnum*2, input_dim, kernel_size=3, stride=1, padding=1)
         )
         self.trans1 = nn.Sequential(
-            TransformerBlock(size=[input_dim*2, 256, 256],patch_size=32, MiniTransFormer=[512, 2, 8, 2048], use_global=True),
-            SNGatedConv2dWithActivation(input_dim*2, input_dim*2, kernel_size=3, stride=1, padding=1),
-            TransformerBlock(size=[input_dim*2, 256, 256],patch_size=16, MiniTransFormer=[512, 2, 8, 2048], use_local=True),
+            TransformerBlock(size=[input_dim*2, 256, 256],patch_size=16, MiniTransFormer=[512, 2, 8, 2048], use_global=True),
             SNGatedConv2dWithActivation(input_dim*2, input_dim, kernel_size=3, stride=1, padding=1)
         )
  
