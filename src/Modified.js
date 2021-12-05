@@ -3,13 +3,18 @@ import React, { Component } from 'react';
 import {Paper} from 'material-ui';
 import Slider from '@material-ui/core/Slider';
 import {ClipLoader} from 'react-spinners';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import Stack from '@material-ui/core/Stack';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/core/Alert';
 
 import Box from '@material-ui/core/Box';
 import {inpaint, changeModel, randomImage} from './util.js';
 import './App.css';
 // import styles from './App.css';
 import PropTypes from 'prop-types';
+const Alert = React.forwardRef(function Alert(props, ref) {
+return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 function Item(props) {
   const { sx, ...other } = props;
@@ -43,7 +48,9 @@ class Modified extends Component {
             order: false,
             loading: false,
             eraserEnable: false,
-            sliderValue: 1
+            sliderValue: 1,
+            error: false,
+            errorMsg: '加载错误，请刷新后重试'
         };
     }
 
@@ -111,6 +118,7 @@ class Modified extends Component {
        }) 
     }
 
+    // 根据滑动条生成图片
     gensliderImage(){
         const val = this.state.sliderValue
         if (val>0 && val<256){
@@ -126,6 +134,8 @@ class Modified extends Component {
         }
         
     }
+    
+    // 调节滑动条
     handleSlider = (e, val) => {
         this.setState({
             sliderValue: val
@@ -133,29 +143,42 @@ class Modified extends Component {
         this.gensliderImage()
      }
     
+    // 调用后端修复图片
     inpaintImage = () => {
         this.setState({
             mouseDown: false,
             loading: true
         })
         inpaint(this.cPaintImg.getContext('2d'), this.cPaintDraw.getContext('2d')).then(img => {
-            this.cinpaintImg.getContext('2d').putImageData(img[0], 0, 0);
-            this.gensliderImage()
+            if (img==null){
+                this.handleError('模型调用失败，请稍后再试')
+            }else{
+                this.cinpaintImg.getContext('2d').putImageData(img[0], 0, 0);
+                this.gensliderImage()
+            }
+            
          }).then(() => this.setState({ loading: false }));
     }
+
+    // 从后端随机一张图并修复
     drawRandomImage = (nProps) => {
         this.setState({
             mouseDown: false,
             loading: true
         })
         randomImage(nProps.mask_mode, nProps.mask_mode).then(img => {
-            // 更新编辑图与对应mask
-            this.cPaintImg.getContext('2d').putImageData(img[0], 0, 0);
-            this.cPaintDraw.getContext('2d').putImageData(img[1], 0, 0);
-            // 修复好的图片
-            this.cinpaintImg.getContext('2d').putImageData(img[2], 0, 0);
-            // 根据滑动条更新合成图
-            this.gensliderImage()
+            if (img==null){
+                this.handleError('随机图片失败，请稍后再试')
+            }else{
+                // 更新编辑图与对应mask
+                this.cPaintImg.getContext('2d').putImageData(img[0], 0, 0);
+                this.cPaintDraw.getContext('2d').putImageData(img[1], 0, 0);
+                // 修复好的图片
+                this.cinpaintImg.getContext('2d').putImageData(img[2], 0, 0);
+                // 根据滑动条更新合成图
+                this.gensliderImage()
+            }
+            
          }).then(() => this.setState({ loading: false }));
     }
     componentDidMount() {
@@ -169,8 +192,16 @@ class Modified extends Component {
         }
         if (this.props.image_type!=nProps.image_type || this.props.mask_mode!=nProps.mask_mode) {
             // 图片类型或者模型更换
-            changeModel(nProps.image_type, nProps.mask_mode);
-            this.inpaintImage()
+            this.setState({
+                loading: true
+            })
+            changeModel(nProps.image_type, nProps.mask_mode).then(result =>{
+                if (result){
+                    this.inpaintImage()
+                }else{
+                    this.handleError('模型更换失败，请稍后重试')
+                }
+            }).then(() => this.setState({ loading: false }));
         }
         if (nProps.random){
             // 随机图片
@@ -185,9 +216,34 @@ class Modified extends Component {
         this.props = nProps;
     }
 
+    // 加载错误，提示信息
+    handleError = (msg) => {
+        // console.log(msg)
+        this.setState({
+            error: true,
+            errorMsg: msg
+        })
+    };
+
+    // 关闭错误提示
+    handleErrorClose = (event, reason) => {
+        if (reason === 'clickaway') {
+        return;
+        }
+        this.setState({
+            error: false
+        })
+    };
     render() {
         return (
             <div>
+                <Stack spacing={2} sx={{ width: '100%' }}>
+                <Snackbar open={this.state.error}  autoHideDuration={3000} onClose={this.handleErrorClose}>
+                    <Alert onClose={this.handleErrorClose} severity="error" sx={{ width: '100%' }} >
+                        {this.state.errorMsg}
+                    </Alert>
+                </Snackbar>
+                </Stack>
                 <Box
                     sx={{
                     textAlign: 'center',

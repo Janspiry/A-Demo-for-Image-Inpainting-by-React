@@ -23,3 +23,6 @@ yarn-error.log*
 __pycache__
 *.pyc
 
+inpaint/datasets/
+inpaint/release_model/
+inpaint/result.png

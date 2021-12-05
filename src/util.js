@@ -49,7 +49,8 @@ export async function inpaint(iCtx, dCtx) {
         return [processedImg, null];
     })
     .catch(err => {
-        console.log("ERROR:", err, "using Telea");
+        console.log("ERROR:", err, "Inpaint Error");
+        return null;
    });
 }
 
@@ -67,9 +68,11 @@ export async function changeModel(image_type, mask_mode) {
     }).then(res => res.json())
     .then(res => {
         console.log("Info:", "Changed the model");
+        return true
     })
     .catch(err => {
-        console.log("ERROR:", err, "using Telea");
+        console.log("ERROR:", err, "Changed Error");
+        return false
    });
 }
 
@@ -93,7 +96,8 @@ export async function randomImage(image_type, mask_mode) {
         return [randomImage, randomMask, randomResult, null];
     })
     .catch(err => {
-        console.log("ERROR:", err, "using Telea");
+        console.log("ERROR:", err, "randomImage Error");
+        return null;
    });
 }
 export default drawImage;
