@@ -14,8 +14,10 @@ import Divider from '@material-ui/core/Divider';
 import Stack from '@material-ui/core/Stack';
 import {indigo500} from 'material-ui/styles/colors';
 import { styled } from '@material-ui/core/styles';
-import LoadingButton from '@material-ui/core/Button';
-
+import ActionDelete from 'material-ui/svg-icons/action/delete';
+import ImageAddAPhoto from 'material-ui/svg-icons/image/add-a-photo';
+import ActionAutorenew from 'material-ui/svg-icons/action/autorenew';
+import ActionRestore from 'material-ui/svg-icons/action/restore';
 import PropTypes from 'prop-types';
 import './App.css';
 
@@ -25,10 +27,10 @@ function Item(props) {
     <Box
       sx={{
         p: 1,
-        m: 1,
+        m: 0,
         borderRadius: 1,
-        fontSize: '1rem',
-        fontWeight: '700',
+        // fontSize: '1rem',
+        // fontWeight: '700',
         ...sx,
       }}
       {...other}
@@ -58,19 +60,21 @@ class Options extends Component {
   render() {
     return (
       
-      <div className="box" id="options">
+      <div className="tool-bar-wrap">
         <Box
           sx={{
             display: 'flex',
-            flexDirection: 'column',
+            flexDirection: 'row',
+            // bgcolor: 'white',
             justifyContent: 'space-between',
-            p: 1,
-            m: 1,
+            alignItems: 'center', 
+            p: 0,
+            m: 0,
             // bgcolor: 'background.paper',
           }}
         >
-          <Item sx={{ minWidth: 200 , textAlign: 'center'}}>
-              <FormControl fullWidth>
+          <Item sx={{textAlign: 'center'}}>
+              <FormControl variant="standard" fullWidth size>
                 <InputLabel id="demo-simple-select-label">选择图片类型</InputLabel>
                 <Select
                   autoWidth
@@ -81,32 +85,17 @@ class Options extends Component {
                 </Select>
               </FormControl>
           </Item>
-          <Item sx={{ minWidth: 200, textAlign: 'center' }}>
-          
-              <FormControl fullWidth>
-                <InputLabel id="demo-simple-select-label">选择模型</InputLabel>
-                <Select onChange={this.props.maskModeChanged} value={this.props.mask_mode} >
-                  <MenuItem value="gconv">应付随机缺失</MenuItem>
-                  <MenuItem value="center">应付大面积缺失</MenuItem>
-                </Select>
-              </FormControl>
-
-          </Item>
-          <Divider/>
-          <Item>
-              <h4>画笔尺寸</h4>    
+          <Divider orientation="vertical" flexItem />  
+          <Item >
               <Box sx={{  display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',}}>
-                <Box sx={{ minWidth: 120}} >
+                画笔尺寸
+                <Box sx={{ marginLeft:2, marginRight:3, minWidth: 120}} >
                 <Slider min={2} max={30} defaultValue={15} step={1}  onChange={this.props.brushChanged}/>
                 </Box>
                 <svg height="60px" width="60px">
                   <circle cx="30" cy="30" fill={indigo500} r={this.props.brushSize}/>
                 </svg>
               </Box>
-          </Item>
-          <Divider/>
-          <Item>
-              <Button variant="outlined" color="error" onClick={this.props.reset}>重修一次</Button>
           </Item>
           <Item >
               <FormGroup>
@@ -119,19 +108,27 @@ class Options extends Component {
                   />
               </FormGroup>
           </Item>
-          <Divider/>
-          <Item  sx={{  display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-              <Button variant="outlined" onClick={this.props.randomImage}>随机图片</Button>
+          <Divider orientation="vertical" flexItem />
+          <Item>
+              <Button variant="text" color="error" startIcon={<ActionRestore  color="#d32f2f"/>} onClick={this.props.reset}>重修一次</Button>
+          </Item>
+          <Divider orientation="vertical" flexItem />
+          <Item>
+              <Button startIcon={<ActionAutorenew  color="#1976d2"/>} variant="text" onClick={this.props.randomImage}>随机图片</Button>
+              
+          </Item>
+          
+          <Item>
               <Stack direction="row" alignItems="center" spacing={2}>
                 <label htmlFor="contained-button-file">
                   <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={this.handleImageUpload.bind(this)}/>
-                  <Button variant="contained" component="span">
+                  <Button  startIcon={<ImageAddAPhoto  color="#1976d2"/>} variant="text" component="span">
                     上传图片
                   </Button>
                 </label>
-              </Stack>
+              </Stack>    
           </Item>
-          
+               
         </Box>
           
 

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import {Paper} from 'material-ui';
+import Paper  from '@material-ui/core/Paper';
 import Slider from '@material-ui/core/Slider';
 import {ClipLoader} from 'react-spinners';
 import Stack from '@material-ui/core/Stack';
@@ -22,10 +22,10 @@ function Item(props) {
     <Box
       sx={{
         // bgcolor: 'primary.main',
-        // color: 'white',
+        color: 'white',
         p: 1,
         m: 1,
-        borderRadius: 1,
+        borderRadius: 10,
         // textAlign: 'center',
         fontSize: '1rem',
         fontWeight: '700',
@@ -88,8 +88,8 @@ class Modified extends Component {
                 ctx.restore();
                 
             }else{
-                // 251, 150, 107
-                ctx.strokeStyle = 'rgba(251, 150, 107, 0.5)';
+                // 215, 234, 242
+                ctx.strokeStyle = 'rgba(215, 234, 242, 0.5)';
                 ctx.lineJoin = 'round';
                 ctx.lineCap = 'round';
                 ctx.lineWidth = this.props.brushSize * 2;
@@ -129,7 +129,7 @@ class Modified extends Component {
 
             var ctx=this.cGenDraw.getContext("2d");
             ctx.clearRect(0,0,256,256);
-            ctx.fillStyle="rgba(251, 150, 107, 0.5)";
+            ctx.fillStyle="rgba(215, 234, 242, 0.5)";
             ctx.fillRect(val-1,0,5,256);
         }
         
@@ -236,7 +236,7 @@ class Modified extends Component {
     };
     render() {
         return (
-            <div>
+            <div className="drawing-box">
                 <Stack spacing={2} sx={{ width: '100%' }}>
                 <Snackbar open={this.state.error}  autoHideDuration={3000} onClose={this.handleErrorClose}>
                     <Alert onClose={this.handleErrorClose} severity="error" sx={{ width: '100%' }} >
@@ -248,14 +248,20 @@ class Modified extends Component {
                     sx={{
                     textAlign: 'center',
                     display: 'flex',
-                    justifyContent: 'space-around',
                     flexDirection: 'row',
+                    justifyContent: 'space-around',
+                    alignContent: 'center',
+                    
+                    bottom: 0,
                     p: 1,
                     m: 1,
+                    paddingTop: 20
                     }}
                 >
-                    <Item>
-                        <Paper style={{height: 256, width: 256, display: "inline-block"}} zDepth={3}>
+                    <Item >
+                        <h3 style={{margin:10}} id="modified-title">编辑图片</h3>
+
+                        <Paper elevation={24} style={{height: 256, width: 256}}>
                             <canvas id="modified-canvas" height="256px" width="256px" 
                                     ref={cPaintImg => this.cPaintImg = cPaintImg}> 
                             </canvas>
@@ -265,30 +271,29 @@ class Modified extends Component {
                                     onMouseLeave={this.mouseLeave}>
                             </canvas>
                         </Paper>
-                        <h3 style={{margin:10}} id="modified-title">编辑图片</h3>
                         <ClipLoader color="rgb(25, 118, 210)" loading={this.state.loading} />
                         {/* <LinearProgress  disabled={this.state.loading}/> */}
                     </Item>
                     <Item >
-                        <Paper style={{height: 256, width: 256}} zDepth={3}>
+                    <h3 style={{margin:10}} id="modified-title">智能修复</h3>
+
+                        <Paper elevation={24} style={{height: 256, width: 256}}>
                         <canvas id="original-canvas" height="256px" width="256px" ref={c => this.cGenImg = c}></canvas>
                         <canvas id="draw-canvas" height="256px" width="256px" ref={c => this.cGenDraw = c}>
                         </canvas>
                         </Paper>  
-                        <h3 style={{margin:10}} id="modified-title">智能修复</h3>
                         <Slider
                             min={1}
                             max={256}
                             step={1}
                             value={this.state.sliderValue}
                             onChange={this.handleSlider}
-                            size="large"
                             className='slider' 
                             componentsProps={{ thumb: { className: 'thumb' } }}
                         />
-                        <view style={{width:0,height:0,overflow:"hidden",display:"None"}}>
+                        <div style={{width:0,height:0,overflow:"hidden",display:"None"}}>
                         <canvas id="original-canvas" height="256px" width="256px" ref={c => this.cinpaintImg = c}></canvas>
-                        </view>
+                        </div>
                     </Item>
                 </Box>
             </div>

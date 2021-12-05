@@ -1,35 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component,  Fragment} from 'react';
 
-// import {SqueezeNet} from './squeezenet/squeezenet.js';
 import {MuiThemeProvider, Toolbar, ToolbarTitle} from 'material-ui';
-import {indigo500, red800} from 'material-ui/styles/colors';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-
-import Box from '@material-ui/core/Box';
-
 import Options from './Options.js';
 import Modified from './Modified.js';
 import Help from './Help.js';
-
+import {indigo500, red800} from 'material-ui/styles/colors';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 
 import './App.css';
-
-function Item(props) {
-  const { sx, ...other } = props;
-  return (
-    <Box
-      sx={{
-        p: 0,
-        m: 0,
-        borderRadius: 1,
-        fontSize: '1rem',
-        fontWeight: '700',
-        ...sx,
-      }}
-      {...other}
-    />
-  );
-}
 const muiTheme = getMuiTheme({
   palette: {
     primary1Color: indigo500,
@@ -112,34 +90,23 @@ class App extends Component {
   render() {
     if (this.state.netLoaded) {
       return (
-        <MuiThemeProvider muiTheme={muiTheme}>
-          <div id="mui-container">
-            <Toolbar id="header" style={{backgroundColor: "rgba(63, 81, 181,1.0)", color: "white"}}>
+          // <Fragment>
+          <MuiThemeProvider muiTheme={muiTheme}>
+            <div id="mui-container">
+            <Toolbar style={{backgroundColor: "#3f51b5", color: "#1e1e1e", paddingTop:2, paddingBottom: 2}}>
               <a href="/"><ToolbarTitle text="交互式图像修复" /></a>
+              {/* <img src='logo_buaa.png'></img> */}
             </Toolbar>
             <div id="main">
-          <Box sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            p: 0,
-            m: 0,
-          }}>
-            <Item sx={{flexShrink: 1}}>
-                <Options imageTypeChanged={this.imageTypeChanged}  imageUpload={this.imageUpload} maskModeChanged={this.maskModeChanged} 
-                brushChanged={this.brushChanged}  reset={this.reset} randomImage={this.randomImage} random={this.state.random} eraserChanged={this.eraserChanged} 
-                  brushSize={this.state.brushSize} image_type={this.state.image_type} mask_mode={this.state.mask_mode}/>
-            </Item>
-            <Item sx={{width: '100%', alignSelf: 'center'}}> 
-                  <Modified  image_type={this.state.image_type}  mask_mode={this.state.mask_mode} brushSize={this.state.brushSize} reset={this.state.reset} 
+            <Modified  image_type={this.state.image_type}  mask_mode={this.state.mask_mode} brushSize={this.state.brushSize} reset={this.state.reset} 
                   random={this.state.random}  eraserEnable={this.state.eraserEnable}/>
-            </Item>
-            <Item sx={{flexShrink: 1}}> 
-              <Help/>
-            </Item>
-         </Box>
-            </div>
+            <Options imageTypeChanged={this.imageTypeChanged}  imageUpload={this.imageUpload} maskModeChanged={this.maskModeChanged} 
+            brushChanged={this.brushChanged}  reset={this.reset} randomImage={this.randomImage} random={this.state.random} eraserChanged={this.eraserChanged} 
+              brushSize={this.state.brushSize} image_type={this.state.image_type} mask_mode={this.state.mask_mode}/>
+          {/* </Fragment> */}
           </div>
-        </MuiThemeProvider>
+          </div>
+          </MuiThemeProvider>
       );
     } else {
       return (

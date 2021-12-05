@@ -169,9 +169,9 @@ class ui_model():
         mask_len = mask.size
         for i in range(0, mask_len, 4):
             if mask[i]>0:
-                mask[i]=251
-                mask[i+1]=150
-                mask[i+2]=107
+                mask[i]=215
+                mask[i+1]=234
+                mask[i+2]=242
                 mask[i+3]=255
             else:
                 mask[i+3]=0
