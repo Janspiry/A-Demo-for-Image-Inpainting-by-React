@@ -1,4 +1,4 @@
-本项目为基于注意力机制的人脸图像修复展示，大体分为前后端两个部分。
+本项目用于图像修复效果展示，项目大体分为前后端两个部分。
 
 后端是由Python，结合Numpy及Pytorch编写的修复模型。
 
@@ -10,23 +10,21 @@
 
 在运行之前，我们需要准备模型需要的依赖库及前端所需的组件库。
 
-可以通过pip或者conda虚拟环境安装，进入后端项目主目录inpaint，运行如下命令：
+进入后端项目主目录inpaint，使用conda配置所需要的运行环境，运行如下命令：
 
 ```python
-conda create -n pytorch python=3.7
-conda activate pytorch
-conda install pytorch torchvision torchaudio cudatoolkit=10.2 -c pytorch
-conda install numpy PIL opencv glob einops
-conda install pyqt5
+conda create  --name pytorch --file spec-list.txt
+或者
+conda env create -f environment.yml
 ```
 
-随后运行界面程序
+随后运行服务器端程序
 
 ```python
 python inpaint_server.py
 ```
 
-在项目主目录安装前端依赖，运行一下命令
+在项目主目录安装前端依赖，运行启动命令：
 
 ```bash
 yarn install
@@ -36,12 +34,45 @@ yarn start
 #### 文件说明
 
 ```
-├─inpaint # 后端 
-    ├─inpaint_server # 前后端对接
-├─public # 公共资源文件
-└─src # 前端
+├─inpaint ----------------------- // 服务器端
+│	├─configs --------------------- // 模型配置文件
+│	│	├─celebahq_center.json 
+│	│	├─celebahq_gconv.json 
+│	│	└─places2_gconv.json 
+│	├─datasets -------------------- // 模型数据集
+│	│	├─celebahq 
+│	│	├─places2 
+│	│	└─test 
+│	├─environment.yml ------------- // 服务器端环境配置要求
+│	├─inpaint_server.py ----------- // 前后端对接逻辑
+│	├─model ----------------------- // 模型定义
+│	├─release_model --------------- // 预训练模型
+│	└─result.png 
+├─package-lock.json 
+├─package.json ------------------ // 前端依赖
+├─public ------------------------ // 公共资源
+│	├─index.html 
+│	├─logo_buaa.png 
+│	├─manifest.json 
+│	├─人脸图片.jpg 
+│	└─示例图片.jpg 
+├─README.md 
+└─src --------------------------- // 前端功能及逻辑实现
+  ├─App.css --------------------- // 样式文件
+  ├─App.js ---------------------- // 主界面
+  ├─Help.js --------------------- // 帮助
+  ├─Modified.js ----------------- // 图片显示界面
+  ├─Options.js ------------------ // 选项栏
+  ├─registerServiceWorker.js 
+  └─util.js --------------------- // 封装接口
 ```
 
-#### 效果展示
+#### 版本更新
+
+##### v 0.1
 
 ![](assets/20211205120955.gif)
+
+##### v 0.2
+
+![](assets/20211206203355.gif)
