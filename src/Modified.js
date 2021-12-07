@@ -22,7 +22,7 @@ function Item(props) {
     <Box
       sx={{
         // bgcolor: 'primary.main',
-        color: 'white',
+        color: 'black',
         p: 1,
         m: 1,
         borderRadius: 10,
@@ -83,13 +83,13 @@ class Modified extends Component {
                         ctx.arc(clickX[i],clickY[i],this.props.brushSize,0,2*Math.PI);
                     }
                     ctx.clip()
-                    ctx.clearRect(0,0,256,256);
+                    ctx.clearRect(0,0,512,512);
                 }
                 ctx.restore();
                 
             }else{
-                // 215, 234, 242
-                ctx.strokeStyle = 'rgba(215, 234, 242, 0.5)';
+                // 200, 224, 228
+                ctx.strokeStyle = 'rgba(200, 224, 228, 0.8)';
                 ctx.lineJoin = 'round';
                 ctx.lineCap = 'round';
                 ctx.lineWidth = this.props.brushSize * 2;
@@ -121,16 +121,16 @@ class Modified extends Component {
     // 根据滑动条生成图片
     gensliderImage(){
         const val = this.state.sliderValue
-        if (val>0 && val<256){
-            const cPaintImg = this.cPaintImg.getContext('2d').getImageData(0, 0, val, 256);
+        if (val>0 && val<512){
+            const cPaintImg = this.cPaintImg.getContext('2d').getImageData(0, 0, val, 512);
             this.cGenImg.getContext('2d').putImageData(cPaintImg, 0, 0);
-            const cinpaintImg = this.cinpaintImg.getContext('2d').getImageData(val, 0, 256-val+1, 256);
+            const cinpaintImg = this.cinpaintImg.getContext('2d').getImageData(val, 0, 512-val+1, 512);
             this.cGenImg.getContext('2d').putImageData(cinpaintImg, val, 0);
 
             var ctx=this.cGenDraw.getContext("2d");
-            ctx.clearRect(0,0,256,256);
-            ctx.fillStyle="rgba(215, 234, 242, 0.5)";
-            ctx.fillRect(val-1,0,5,256);
+            ctx.clearRect(0,0,512,512);
+            ctx.fillStyle="rgba(200, 224, 228, 1)";
+            ctx.fillRect(val-1,0,5,512);
         }
         
     }
@@ -188,7 +188,7 @@ class Modified extends Component {
     componentWillReceiveProps(nProps) {
         if (nProps.reset){
             // 编辑重置
-            this.cPaintDraw.getContext('2d').clearRect(0, 0, 256, 256);
+            this.cPaintDraw.getContext('2d').clearRect(0, 0, 512, 512);
         }
         if (this.props.image_type!=nProps.image_type || this.props.mask_mode!=nProps.mask_mode) {
             // 图片类型或者模型更换
@@ -255,17 +255,17 @@ class Modified extends Component {
                     bottom: 0,
                     p: 1,
                     m: 1,
-                    paddingTop: 20
+                    paddingTop: 10
                     }}
                 >
                     <Item >
                         <h3 style={{margin:10}} id="modified-title">编辑图片</h3>
 
-                        <Paper elevation={24} style={{height: 256, width: 256}}>
-                            <canvas id="modified-canvas" height="256px" width="256px" 
+                        <Paper elevation={24} style={{height: 512, width: 512}}>
+                            <canvas id="modified-canvas" height="512px" width="512px" 
                                     ref={cPaintImg => this.cPaintImg = cPaintImg}> 
                             </canvas>
-                            <canvas id="draw-canvas" height="256px" width="256px" 
+                            <canvas id="draw-canvas" height="512px" width="512px" 
                                     ref={cPaintDraw => this.cPaintDraw = cPaintDraw} onMouseDown={this.mouseDown}
                                     onMouseMove={this.mouseMove} onMouseUp={this.mouseUp}
                                     onMouseLeave={this.mouseLeave}>
@@ -277,14 +277,14 @@ class Modified extends Component {
                     <Item >
                     <h3 style={{margin:10}} id="modified-title">智能修复</h3>
 
-                        <Paper elevation={24} style={{height: 256, width: 256}}>
-                        <canvas id="original-canvas" height="256px" width="256px" ref={c => this.cGenImg = c}></canvas>
-                        <canvas id="draw-canvas" height="256px" width="256px" ref={c => this.cGenDraw = c}>
+                        <Paper elevation={24} style={{height: 512, width: 512}}>
+                        <canvas id="original-canvas" height="512px" width="512px" ref={c => this.cGenImg = c}></canvas>
+                        <canvas id="draw-canvas" height="512px" width="512px" ref={c => this.cGenDraw = c}>
                         </canvas>
                         </Paper>  
                         <Slider
                             min={1}
-                            max={256}
+                            max={512}
                             step={1}
                             value={this.state.sliderValue}
                             onChange={this.handleSlider}
@@ -292,7 +292,7 @@ class Modified extends Component {
                             componentsProps={{ thumb: { className: 'thumb' } }}
                         />
                         <div style={{width:0,height:0,overflow:"hidden",display:"None"}}>
-                        <canvas id="original-canvas" height="256px" width="256px" ref={c => this.cinpaintImg = c}></canvas>
+                        <canvas id="original-canvas" height="512px" width="512px" ref={c => this.cinpaintImg = c}></canvas>
                         </div>
                     </Item>
                 </Box>

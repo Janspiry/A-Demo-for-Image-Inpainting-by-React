@@ -93,10 +93,12 @@ class App extends Component {
           // <Fragment>
           <MuiThemeProvider muiTheme={muiTheme}>
             <div id="mui-container">
-            <Toolbar style={{backgroundColor: "#3f51b5", color: "#1e1e1e", paddingTop:2, paddingBottom: 2}}>
+              <div id="toolbar">
+            <Toolbar style={{backgroundColor: "#7db6bf", color: "#1e1e1e", paddingTop:1, paddingBottom: 1}}>
               <a href="/"><ToolbarTitle text="交互式图像修复" /></a>
               {/* <img src='logo_buaa.png'></img> */}
             </Toolbar>
+            </div>
             <div id="main">
             <Modified  image_type={this.state.image_type}  mask_mode={this.state.mask_mode} brushSize={this.state.brushSize} reset={this.state.reset} 
                   random={this.state.random}  eraserEnable={this.state.eraserEnable}/>

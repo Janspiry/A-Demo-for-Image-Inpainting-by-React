@@ -70,6 +70,8 @@ class Options extends Component {
             alignItems: 'center', 
             p: 0,
             m: 0,
+            paddingLeft: 4,
+            paddingRight: 4
             // bgcolor: 'background.paper',
           }}
         >

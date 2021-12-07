@@ -16,12 +16,13 @@ import glob
 import os
 import cv2
 def set_device(args):
+  return args
+  # 不使用GPU
   if torch.cuda.is_available():
     if isinstance(args, list):
       return (item.cuda() for item in args)
     else:
       return args.cuda()
-  return args
 class ui_model():
     mask = None 
     img = None
@@ -78,19 +79,19 @@ class ui_model():
     def set_img(self, img_arr=None):
         if img_arr is not None:
             # array list to Image
-            img = np.array(img_arr).reshape((self.h, self.w, 4)) # list array -> h,w,c
+            img = np.array(img_arr).reshape((512, 512, 4)) # list array -> h,w,c
             # img = img.transpose([2,0,1]) # h,w,c -> c, h, w
             img = img.astype(np.uint8)
-            self.img =  Image.fromarray(img).convert('RGB')
+            self.img =  Image.fromarray(img).convert('RGB').resize((self.h, self.w), Image.NEAREST)
             self.img_tensor = set_device(F.to_tensor(self.img)*2-1).unsqueeze(0)
 
     def set_mask(self, mask_arr=None):
         """draw the mask"""
         if mask_arr is not None:
             # array list to Image
-            m = np.array(mask_arr).reshape((self.h, self.w))
+            m = np.array(mask_arr).reshape((512, 512))
             m[m!=0] = 255
-            self.mask = Image.fromarray(m).convert('L')
+            self.mask = Image.fromarray(m).convert('L').resize((self.h, self.w), Image.NEAREST)
 
         self.mask_tensor = set_device(F.to_tensor(self.mask)).unsqueeze(0)
         self.masked_img_tensor = self.img_tensor*(1.-self.mask_tensor) + self.mask_tensor
@@ -141,6 +142,7 @@ class ui_model():
         self.set_mask(mask_arr)
         self.fill_mask()
         ret = self.result.convert("RGBA")
+        ret = ret.resize((512,512), Image.BICUBIC)
         ret = np.array(ret).reshape(-1)
         return ret.tolist()
 
@@ -164,18 +166,22 @@ class ui_model():
         self.masked_img_tensor = self.img_tensor*(1.-self.mask_tensor) + self.mask_tensor
 
         self.fill_mask()
+        self.img = self.img.resize((512,512), Image.BICUBIC)
+        self.mask = self.mask.resize((512,512), Image.BICUBIC)
+        self.result = self.result.resize((512,512), Image.BICUBIC)
+
         image = np.array(self.img.convert("RGBA")).reshape(-1)
         mask = np.array(self.mask.convert("RGBA")).reshape(-1)
+        result = np.array(self.result.convert("RGBA")).reshape(-1)
         mask_len = mask.size
         for i in range(0, mask_len, 4):
             if mask[i]>0:
-                mask[i]=215
-                mask[i+1]=234
-                mask[i+2]=242
+                mask[i]=200
+                mask[i+1]=224
+                mask[i+2]=228
                 mask[i+3]=255
             else:
                 mask[i+3]=0
-        result = np.array(self.result.convert("RGBA")).reshape(-1)
         return {'image':image.tolist(), 'mask':mask.tolist(), 'result': result.tolist()}
 
 
