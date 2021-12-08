@@ -18,6 +18,7 @@ import ActionDelete from 'material-ui/svg-icons/action/delete';
 import ImageAddAPhoto from 'material-ui/svg-icons/image/add-a-photo';
 import ActionAutorenew from 'material-ui/svg-icons/action/autorenew';
 import ActionRestore from 'material-ui/svg-icons/action/restore';
+import FileFileDownload from 'material-ui/svg-icons/file/file-download';
 import PropTypes from 'prop-types';
 import './App.css';
 
@@ -123,12 +124,17 @@ class Options extends Component {
           <Item>
               <Stack direction="row" alignItems="center" spacing={2}>
                 <label htmlFor="contained-button-file">
-                  <Input accept="image/*" id="contained-button-file" multiple type="file" onChange={this.handleImageUpload.bind(this)}/>
-                  <Button  startIcon={<ImageAddAPhoto  color="#1976d2"/>} variant="text" component="span">
+                  <Input accept="image/*" id="contained-button-file" multiple type="file" className="file" ref={x=>this._file=x} onChange={this.fileChange}/>
+                  <Button  startIcon={<ImageAddAPhoto  color="#1976d2"/>} variant="text" component="span" onClick={this.props.imageUpload}>
                     上传图片
                   </Button>
                 </label>
               </Stack>    
+          </Item>
+  
+          <Item>
+              <Button    startIcon={<FileFileDownload  color="#1976d2"/>} variant="text" onClick={this.props.download}>保存图片</Button>
+
           </Item>
                
         </Box>

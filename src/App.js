@@ -21,12 +21,15 @@ class App extends Component {
     
     this.state = {
       netLoaded: true,
+      image: 0,
       brushSize: 15,
       reset: 0,
       image_type: 'celebahq',
       mask_mode: 'gconv',
       random: 0,
-      eraserEnable: 0
+      eraserEnable: 0,
+      loadin:false,
+      download:0
     };
 
   }
@@ -47,16 +50,10 @@ class App extends Component {
     this.setState({eraserEnable: eraserEnable});
   };
 
-  // 文件上传没完成！！
-  imageUpload = (e) => {
-    e.preventDefault()
-    let file = e.target
-    var reader = new FileReader();
-    reader.readAsDataURL(file.files[0].getNative());
-    const img = new Image(256, 256);
-    reader.onload = function (e) {
-        img.src = this.result;
-    }
+imageUpload = (e) => {
+    this.setState({
+      image: 1
+    });
   }
 
 
@@ -75,7 +72,15 @@ class App extends Component {
       });
     });
   }
-
+  download = (e) => {
+    this.setState({
+      download: 1
+    }, function() {
+      this.setState({
+        download: 0
+      });
+    });
+  }
   randomImage = (e) => {
     this.setState({
       random: 1
@@ -100,10 +105,10 @@ class App extends Component {
             </Toolbar>
             </div>
             <div id="main">
-            <Modified  image_type={this.state.image_type}  mask_mode={this.state.mask_mode} brushSize={this.state.brushSize} reset={this.state.reset} 
+            <Modified  image_type={this.state.image_type}  mask_mode={this.state.mask_mode} brushSize={this.state.brushSize} reset={this.state.reset} download={this.state.download}
                   random={this.state.random}  eraserEnable={this.state.eraserEnable}/>
-            <Options imageTypeChanged={this.imageTypeChanged}  imageUpload={this.imageUpload} maskModeChanged={this.maskModeChanged} 
-            brushChanged={this.brushChanged}  reset={this.reset} randomImage={this.randomImage} random={this.state.random} eraserChanged={this.eraserChanged} 
+            <Options imageTypeChanged={this.imageTypeChanged}  imageUpload={this.imageUpload} maskModeChanged={this.maskModeChanged}
+            brushChanged={this.brushChanged}  reset={this.reset} randomImage={this.randomImage} random={this.state.random} download={this.download} eraserChanged={this.eraserChanged}
               brushSize={this.state.brushSize} image_type={this.state.image_type} mask_mode={this.state.mask_mode}/>
           {/* </Fragment> */}
           </div>

@@ -12,6 +12,7 @@ import {inpaint, changeModel, randomImage} from './util.js';
 import './App.css';
 // import styles from './App.css';
 import PropTypes from 'prop-types';
+import FileSaver from 'file-saver';
 const Alert = React.forwardRef(function Alert(props, ref) {
 return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
@@ -50,7 +51,8 @@ class Modified extends Component {
             eraserEnable: false,
             sliderValue: 1,
             error: false,
-            errorMsg: '加载错误，请刷新后重试'
+            errorMsg: '加载错误，请刷新后重试',
+            showElem:false
         };
     }
 
@@ -213,6 +215,9 @@ class Modified extends Component {
                 eraserEnable: nProps.eraserEnable
             }) 
         }
+        if(nProps.download){
+            this.adownLoad(nProps)
+        } 
         this.props = nProps;
     }
 
@@ -235,7 +240,9 @@ class Modified extends Component {
         })
     };
     render() {
+        const { showElem }= false;
         return (
+            
             <div className="drawing-box">
                 <Stack spacing={2} sx={{ width: '100%' }}>
                 <Snackbar open={this.state.error}  autoHideDuration={3000} onClose={this.handleErrorClose}>
@@ -258,6 +265,12 @@ class Modified extends Component {
                     paddingTop: 10
                     }}
                 >
+                    <Item>
+                        <Stack direction="row" alignItems="center" spacing={2}>
+                            <label htmlFor="contained-button-file2">
+                            </label>
+                        </Stack>
+                    </Item>
                     <Item >
                         <h3 style={{margin:10}} id="modified-title">编辑图片</h3>
 
@@ -295,9 +308,48 @@ class Modified extends Component {
                         <canvas id="original-canvas" height="512px" width="512px" ref={c => this.cinpaintImg = c}></canvas>
                         </div>
                     </Item>
+                    <Item>
+                        <Stack direction="row" alignItems="center" spacing={2}>
+                            <label htmlFor="contained-button-file">
+                                <input accept="image/*" id="contained-button-file" multiple type="file" className="file" ref={x=>this._file=x} onChange={this.fileChange} style={{display:showElem?'block':'none'}}/>
+                            
+
+                            </label>
+                        </Stack>
+                    </Item>
                 </Box>
             </div>
         );
+    }
+    fileChange=(nProps)=>{
+        this.setState({S:true});
+        console.log(nProps.imageUpload);
+        // console.log(nProps.reset);
+        let picom= this._file.files[0];
+        if(!picom) return ;
+        // console.log(picom);
+        let fileReade=new FileReader();
+        fileReade.readAsDataURL(picom);
+        fileReade.onload=ev => {
+            this.img=new Image();
+            this.img.src=ev.target.result;
+            this.img.onload=()=>{
+                this.ctx=this.cPaintImg.getContext('2d');
+                this.ctx.drawImage(this.img,0,0,512,512);
+                this.ctx=this.cGenDraw.getContext('2d');
+                this.ctx.drawImage(this.img,0,0,512,512);
+                // this.ctx=this.cGenDraw.getContext('2d');
+                this.inpaintImage()
+            };
+        }
+    }
+    adownLoad=(nProps)=>{
+        // this.setState({S:true});
+        console.log(nProps.download);
+        var canvas = document.getElementById("original-canvas");
+        canvas.toBlob(function(blob) {
+            FileSaver.saveAs(blob, "pretty image.png");
+        });
     }
 }
 

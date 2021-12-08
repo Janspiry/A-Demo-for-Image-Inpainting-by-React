@@ -10,6 +10,7 @@
     "d3-color": "^1.0.3",
     "d3-scale": "^2.0.0",
     "d3-scale-chromatic": "^1.2.0",
+    "file-saver": "^2.0.5",
     "material-ui": "^0.20.2",
     "react": "^18.0.0-beta-a65ceef37-20211130",
     "react-dom": "^18.0.0-beta-a65ceef37-20211130",
@@ -24,5 +25,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "antd": "^4.17.2"
   }
 }
